@@ -13,6 +13,8 @@ public class Population {
 	
 	// List of cities
 	private List<City> cities;
+	// SortMethods object
+	private SortMethods sm;
 	
 	// US data file
 	private final String DATA_FILE = "usPopData2017.txt";
@@ -72,22 +74,66 @@ public class Population {
 		System.out.println(cities.size() + " cities in database\n");
 	}
 	
+	/**	Print the menu and return the user input selection after
+	 * 	checking that the input is valid
+	 * 	@return	int	selection
+	 */
+	public int menuSelect() {
+		//	Print menu and prompt
+		printMenu();
+		Prompt menuSelection = new Prompt();
+		// Keep prompting user until a valid response is given
+		boolean isValid = false;
+		while (!isValid) {
+			int selection = menuSelection.getInt("Enter Selection");
+			// Break out of method if selection is valid
+			if(selection >= 1 && selection <= 6 || selection == 9)
+				return selection;
+			// Error only reached if response not valid, process is repeated
+			System.out.println("ERROR: " + selection + 
+										" is not a valid selection"); 
+		}
+		return -1;
+	}
+	
+	/** Find the 50 cities with the most population using selection sorting
+	 * 	and print them
+	 */
+	public void findMostPop() {
+		// 	Copy list so old isn't affected
+		ArrayList<City> newCities = new ArrayList<City>(cities);
+		newCities = sm.insertionSort(newCities);
+		for (int i = 0; i < 50; i++) {
+			System.out.println((i + 1) + ": " + newCities.get(i).getState());
+		}
+		System.out.println("\nElapsed Time");
+	}
+	
 	public static void main(String[] args) {
+		// Initialize and instantiate 
 		Population pop = new Population();
 		pop.readInitiate();
+		// Run
 		pop.run();
 	}
 	
 	public void run() {
+		// instantiate sort method object
+		sm = new SortMethods();
+		// Keep running until quit is selected
 		boolean isClosed = false;
-		while (!isClosed) {
-			printMenu();
-			Prompt menuSelection = new Prompt();
-			int selection = menuSelection.getInt("Enter Selection");
+		while(!isClosed) {
+			int selection = menuSelect();
+			System.out.println("\n");
 			switch (selection) {
-				case 9:	isClosed = true;	break;
-				default:	
-				System.out.println(selection + " is not a valid selection.");
+				case 1:	findMostPop(); break;
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 6:
+				// Includes 9
+				default:	isClosed = true;;
 			}
 		}
 	}
